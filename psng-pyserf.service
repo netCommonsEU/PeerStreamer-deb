@@ -1,0 +1,10 @@
+[Unit]
+Description=PeerStreamer channel synchronizer
+Wants=multi-user.target serf.service
+
+[Service]
+TimeoutStartSec=1
+ExecStart=/usr/bin/psng-pyserf -a 127.0.0.1 -p 7373 bg /tmp/psng-channels.csv /tmp/psng-channels_out.csv
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,77 @@
+#!/bin/bash
+PKG="PeerStreamer-ng"
+VER="0.9.1"
+SECTION="user/hidden"
+PRIORITY="Optional"
+ARCH="$(dpkg-architecture | awk -F '=' '/^DEB_BUILD_ARCH=/ {print $2}')"
+MAINTAINER="Luca Baldesi <luca.baldesi@unitn.it>"
+DESC="PeerStreamer-ng is a fully-fledged application for real-time P2P streaming. It is made up of a P2P powerful but lightweight streaming core and a client side flexible interface."
+BUILD_DIRS="usr/ etc/"
+DEPS="serf,python-pip,wget"
+BUILD_DEPS="bc make gcc autoconf git libmicrohttpd-dev libjansson-dev libnice-dev libssl-dev libsrtp-dev libsofia-sip-ua-dev libglib2.0-dev libopus-dev libogg-dev libcurl4-openssl-dev pkg-config gengetopt libtool automake"
+# more conf fields are available, check:
+# http://www.debian.org/doc/debian-policy/ch-controlfields.html
+
+WD="$PWD"
+
+# propose build dependencies
+echo "Please install the following development files:"
+echo "apt install $BUILD_DEPS -o APT::Install-Recommends=0 -o APT::Install-Suggests=0"
+read -n1 -r -p "Press \"q\" to exit or anything else to continue." key
+if [ "$key" = 'q' ]; then
+    echo ""; exit 0;
+fi
+
+# build our software
+git clone -b testing https://github.com/netCommonsEU/PeerStreamer-ng.git
+cd PeerStreamer-ng
+make 
+cd $WD
+git clone -b source_broadcasting https://github.com/netCommonsEU/psng-pyserf.git
+
+
+# create the destination folder tree
+cd $WD
+mkdir -p usr/bin/
+cp PeerStreamer-ng/peerstreamer-ng usr/bin/
+cp PeerStreamer-ng/Tools/janus/bin/janus usr/bin/
+cp psng-pyserf/psng_pyserf.py usr/bin/psng-pyserf
+mkdir -p etc/systemd/system
+cp -r PeerStreamer-ng/Tools/janus_conf etc/janus
+cp peerstreamer.service etc/systemd/system/
+cp psng-pyserf.service etc/systemd/system/
+
+# configuration part
+echo 2.0 > debian-binary
+echo '#!/bin/bash' > preinst
+echo '#!/bin/bash' > postinst
+echo 'chmod +x /usr/bin/psng-pyserf' >> postinst
+echo 'pip install argparse_actions pyroute2 portalocker' >> postinst
+echo 'mkdir /tmp/serf-python' >> postinst
+echo 'wget -O /tmp/serf-python/pyserf.tar.gz https://ans.disi.unitn.it/redmine/attachments/download/130/serf-python.tar.gz' >> postinst
+echo 'cd /tmp/serf-python && tar xzf pyserf.tar.gz' >> postinst
+echo 'cd /tmp/serf-python && python setup.py install' >> postinst
+echo '' >> postinst
+echo '#!/bin/bash' > prerm
+echo '#!/bin/bash' > postrm
+
+cat > control << EOL
+Package: $PKG
+Version: $VER
+Section: $SECTION
+Priority: $PRIORITY
+Architecture: $ARCH
+Installed-Size: `du -ks $BUILD_DIRS | cut -f 1 | paste -sd+ - | bc`
+Maintainer: $MAINTAINER
+Depends: $DEPS
+Description: $DESC
+EOL
+
+# pack everything together
+tar czf control.tar.gz control preinst postinst prerm postrm
+tar czf data.tar.gz $BUILD_DIRS
+ar -r "${PKG}_${ARCH}.deb" debian-binary control.tar.gz data.tar.gz
+
+# cleanup
+rm -rf control control.tar.gz preinst postinst prerm postrm data.tar.gz
+
