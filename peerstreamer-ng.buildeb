@@ -38,10 +38,15 @@ cp PeerStreamer-ng/Tools/janus/bin/janus usr/bin/
 cp psng-pyserf/psng_pyserf.py usr/bin/psng-pyserf
 mkdir -p usr/share/
 cp -r PeerStreamer-ng/Public usr/share/peerstreamer
+cp -r PeerStreamer-ng/Tools/janus/share/janus usr/share/janus
+mkdir -p usr/lib
+cp -r PeerStreamer-ng/Tools/janus/lib/janus usr/lib/janus
 mkdir -p etc/systemd/system
 cp -r PeerStreamer-ng/Tools/janus_conf etc/janus
+cp janus.cfg etc/janus/janus.cfg
 cp peerstreamer.service etc/systemd/system/
 cp psng-pyserf.service etc/systemd/system/
+
 
 # configuration part
 echo 2.0 > debian-binary
@@ -67,5 +72,5 @@ tar czf data.tar.gz $BUILD_DIRS
 ar -r "${PKG}_${ARCH}.deb" debian-binary control.tar.gz data.tar.gz
 
 # cleanup
-rm -rf control control.tar.gz preinst postinst prerm postrm data.tar.gz
+rm -rf control control.tar.gz preinst prerm postrm data.tar.gz
 
