@@ -4,7 +4,7 @@ Wants=multi-user.target psng-pyserf.service
 
 [Service]
 TimeoutStartSec=1
-ExecStart=/usr/bin/peerstreamer-ng -c /tmp/psng-channels.csv -s "janus_executable=/usr/bin/janus,janus_param=--configs-folder:/etc/janus,janus_logfile=/var/log/janus.log"
+ExecStart=/usr/bin/peerstreamer-ng -f /usr/share/peerstreamer/ -c /tmp/psng-channels.csv -s "janus_executable=/usr/bin/janus,janus_param=--configs-folder:/etc/janus,janus_logfile=/var/log/janus.log"
 
 [Install]
 WantedBy=default.target

@@ -1,0 +1,12 @@
+#!/bin/bash
+
+chmod +x /usr/bin/psng-pyserf
+
+# we need to install our version of serf-python
+pip uninstall serf serf-python
+pip install argparse_actions pyroute2 portalocker
+mkdir /tmp/serf-python
+wget -O /tmp/serf-python/pyserf.tar.gz https://ans.disi.unitn.it/redmine/attachments/download/130/serf-python.tar.gz
+cd /tmp/serf-python && tar xzf pyserf.tar.gz
+cd /tmp/serf-python && python setup.py install
+
