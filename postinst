@@ -10,3 +10,7 @@ wget -O /tmp/serf-python/pyserf.tar.gz https://ans.disi.unitn.it/redmine/attachm
 cd /tmp/serf-python && tar xzf pyserf.tar.gz
 cd /tmp/serf-python && python setup.py install
 
+# serf service package maintainers picked up the wrong file name
+if [ ! -f /usr/local/bin/serf ]; then
+	ln -s /usr/bin/serf /usr/local/bin/serf
+fi

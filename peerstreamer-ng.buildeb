@@ -7,7 +7,7 @@ ARCH="$(dpkg-architecture | awk -F '=' '/^DEB_BUILD_ARCH=/ {print $2}')"
 MAINTAINER="Luca Baldesi <luca.baldesi@unitn.it>"
 DESC="PeerStreamer-ng is a fully-fledged application for real-time P2P streaming. It is made up of a P2P powerful but lightweight streaming core and a client side flexible interface."
 BUILD_DIRS="usr/ etc/"
-DEPS="serf,python-pip,wget"
+DEPS="serf,python-pip,wget,libnice10,libjansson4,libmicrohttpd12"
 BUILD_DEPS="bc make gcc autoconf git libmicrohttpd-dev libjansson-dev libnice-dev libssl-dev libsrtp-dev libsofia-sip-ua-dev libglib2.0-dev libopus-dev libogg-dev libcurl4-openssl-dev pkg-config gengetopt libtool automake"
 # more conf fields are available, check:
 # http://www.debian.org/doc/debian-policy/ch-controlfields.html
